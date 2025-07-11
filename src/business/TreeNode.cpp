@@ -1,7 +1,7 @@
 #include "TreeNode.h"
 
-TreeNode::TreeNode(const std::string& url, bool broken)
-    : url(url), isBroken(broken) {}
+TreeNode::TreeNode(const std::string& url, bool broken, bool external)
+    : url(url), isBroken(broken), isExternal(external) {}
 
 TreeNode::~TreeNode() {
     for (TreeNode* child : children)
@@ -22,4 +22,8 @@ const std::vector<TreeNode*>& TreeNode::getChildren() const {
 
 bool TreeNode::getIsBroken() const {
     return isBroken;
+}
+
+bool TreeNode::getIsExternal() const {
+    return isExternal;
 }

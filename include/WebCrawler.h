@@ -16,6 +16,7 @@ private:
     std::string fetchHtml(const std::string& url) const;
     std::vector<std::string> extractLinks(const std::string& html) const;
     bool isLinkBroken(const std::string& url) const;
+    std::string normalizeUrl(const std::string& url) const;
 
 public:
     WebCrawler(const std::string& domain, bool allowSubdomains);

@@ -4,7 +4,8 @@
 void printTree(TreeNode* node, int depth = 0) {
     if (!node) return;
     for (int i = 0; i < depth; ++i) std::cout << "  ";
-    std::cout << (node->getIsBroken() ? "[X] " : "[✓] ") << node->getUrl() << "\n";
+    std::string tag = node->getIsExternal() ? "[E]" : (node->getIsBroken() ? "[X]" : "[✓]");
+    std::cout << tag << " " << node->getUrl() << "\n";
     for (TreeNode* child : node->getChildren()) {
         printTree(child, depth + 1);
     }
