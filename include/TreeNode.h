@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "CrawlStats.h"
 
 class TreeNode {
 private:
@@ -20,6 +21,8 @@ public:
     const std::vector<TreeNode*>& getChildren() const;
     bool getIsBroken() const;
     bool getIsExternal() const;
+
+    CrawlStats getStats() const;
 };
 
 #endif

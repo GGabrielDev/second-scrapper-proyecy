@@ -1,7 +1,8 @@
-#include "WebCrawler.h"
-#include <regex>
-#include <iostream>
 #include <curl/curl.h>
+#include <iostream>
+#include <regex>
+#include "CrawlStats.h"
+#include "WebCrawler.h"
 
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
     output->append((char*)contents, size * nmemb);

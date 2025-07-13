@@ -3,6 +3,7 @@
 
 #include <set>
 #include <string>
+#include "CrawlStats.h"
 #include "TreeNode.h"
 
 class WebCrawler {

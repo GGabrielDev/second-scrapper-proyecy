@@ -1,3 +1,4 @@
+#include "CrawlStats.h"
 #include "TreeNode.h"
 
 TreeNode::TreeNode(const std::string& url, bool broken, bool external)
@@ -26,4 +27,25 @@ bool TreeNode::getIsBroken() const {
 
 bool TreeNode::getIsExternal() const {
     return isExternal;
+}
+
+CrawlStats TreeNode::getStats() const {
+    CrawlStats stats;
+    stats.total = 1;
+    if (isExternal)
+        stats.external++;
+    else
+        stats.internal++;
+    if (isBroken)
+        stats.broken++;
+
+    for (TreeNode* child : children) {
+        CrawlStats childStats = child->getStats();
+        stats.total += childStats.total;
+        stats.internal += childStats.internal;
+        stats.external += childStats.external;
+        stats.broken += childStats.broken;
+    }
+
+    return stats;
 }
