@@ -59,8 +59,19 @@ bool WebCrawler::isLinkBroken(const std::string& url) const {
 }
 
 std::string WebCrawler::normalizeUrl(const std::string& url) const {
-    size_t pos = url.find('#');
-    return (pos != std::string::npos) ? url.substr(0, pos) : url;
+    std::string clean = url;
+    
+    // Remover fragmentos #
+    size_t pos = clean.find('#');
+    if (pos != std::string::npos) clean = clean.substr(0, pos);
+
+    // Eliminar doble slash final
+    while (clean.ends_with("//")) clean.pop_back();
+
+    // Eliminar slash final redundante (excepto si es solo dominio)
+    if (clean.length() > 8 && clean.ends_with('/')) clean.pop_back();
+
+    return clean;
 }
 
 std::vector<std::string> WebCrawler::extractLinks(const std::string& html) const {
@@ -78,38 +89,34 @@ TreeNode* WebCrawler::crawl(const std::string& url, int depth) {
     std::string normalized = normalizeUrl(url);
     if (visited.count(normalized) || depth < 0) return nullptr;
 
-    bool internal = isInternal(url);
-    TreeNode* node = new TreeNode(url, false, !internal);
     visited.insert(normalized);
 
-    if (!internal) {
-        node->addChild(new TreeNode(url, true, true));
-        return node;
-    }
+    bool internal = isInternal(normalized);
+    bool broken = isLinkBroken(normalized);
+    TreeNode* node = new TreeNode(normalized, broken, !internal);
 
-    bool broken = isLinkBroken(url);
-    node = new TreeNode(url, broken, false);
-    if (broken || depth == 0) return node;
+    if (!internal || broken || depth == 0) return node;
 
-    std::cerr << "[crawl] Visiting: " << url << " at depth " << depth << "\n";
-    std::string html = fetchHtml(url);
+    std::cerr << "[crawl] Visiting: " << normalized << " at depth " << depth << "\n";
+
+    std::string html = fetchHtml(normalized);
     auto links = extractLinks(html);
-    std::cerr << "[crawl] Found " << links.size() << " links in " << url << "\n";
+    std::cerr << "[crawl] Found " << links.size() << " links in " << normalized << "\n";
 
     for (const std::string& link : links) {
-        std::string absolute = link.starts_with("http") ? link : url + link;
+        std::string absolute = link.starts_with("http") ? link : normalized + link;
         std::string normalizedLink = normalizeUrl(absolute);
 
         if (visited.count(normalizedLink)) continue;
 
-        if (!isInternal(absolute)) {
-            TreeNode* child = new TreeNode(absolute, true, true);
+        if (!isInternal(normalizedLink)) {
+            TreeNode* child = new TreeNode(normalizedLink, true, true);
             node->addChild(child);
             visited.insert(normalizedLink);
             continue;
         }
 
-        TreeNode* child = crawl(absolute, depth - 1);
+        TreeNode* child = crawl(normalizedLink, depth - 1);
         if (child) node->addChild(child);
     }
 

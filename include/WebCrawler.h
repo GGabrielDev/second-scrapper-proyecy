@@ -7,16 +7,16 @@
 
 class WebCrawler {
 private:
-    std::string baseDomain;
     bool includeSubdomains;
+    std::string baseDomain;
     std::set<std::string> visited;
 
     bool isInternal(const std::string& url) const;
+    bool isLinkBroken(const std::string& url) const;
     std::string getDomain(const std::string& url) const;
     std::string fetchHtml(const std::string& url) const;
-    std::vector<std::string> extractLinks(const std::string& html) const;
-    bool isLinkBroken(const std::string& url) const;
     std::string normalizeUrl(const std::string& url) const;
+    std::vector<std::string> extractLinks(const std::string& html) const;
 
 public:
     WebCrawler(const std::string& domain, bool allowSubdomains);
