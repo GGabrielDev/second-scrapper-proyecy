@@ -3,6 +3,7 @@
 
 #include <set>
 #include <string>
+#include <unordered_map>
 #include "CrawlStats.h"
 #include "TreeNode.h"
 
@@ -10,7 +11,7 @@ class WebCrawler {
 private:
     bool includeSubdomains;
     std::string baseDomain;
-    std::set<std::string> visited;
+    std::unordered_map<std::string, TreeNode*> nodeRegistry;
 
     bool isInternal(const std::string& url) const;
     bool isLinkBroken(const std::string& url) const;

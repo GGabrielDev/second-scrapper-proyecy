@@ -1,6 +1,7 @@
 #include <curl/curl.h>
 #include <iostream>
 #include <regex>
+#include <unordered_map>
 #include "CrawlStats.h"
 #include "WebCrawler.h"
 
@@ -88,13 +89,15 @@ std::vector<std::string> WebCrawler::extractLinks(const std::string& html) const
 
 TreeNode* WebCrawler::crawl(const std::string& url, int depth) {
     std::string normalized = normalizeUrl(url);
-    if (visited.count(normalized) || depth < 0) return nullptr;
+    if (depth < 0) return nullptr;
 
-    visited.insert(normalized);
+    if (nodeRegistry.count(normalized))
+        return nodeRegistry[normalized];
 
     bool internal = isInternal(normalized);
     bool broken = isLinkBroken(normalized);
     TreeNode* node = new TreeNode(normalized, broken, !internal);
+    nodeRegistry[normalized] = node;
 
     if (!internal || broken || depth == 0) return node;
 
@@ -108,12 +111,12 @@ TreeNode* WebCrawler::crawl(const std::string& url, int depth) {
         std::string absolute = link.starts_with("http") ? link : normalized + link;
         std::string normalizedLink = normalizeUrl(absolute);
 
-        if (visited.count(normalizedLink)) continue;
+        if (nodeRegistry.count(normalizedLink)) continue;
 
         if (!isInternal(normalizedLink)) {
             TreeNode* child = new TreeNode(normalizedLink, true, true);
             node->addChild(child);
-            visited.insert(normalizedLink);
+            nodeRegistry[normalizedLink] = child;
             continue;
         }
 

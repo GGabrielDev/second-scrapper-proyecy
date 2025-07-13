@@ -23,7 +23,7 @@ void printStats(const CrawlStats& stats) {
 int main() {
     std::cout << "Iniciando prueba de WebCrawler...\n";
     WebCrawler crawler("uneg.edu.ve", true);
-    TreeNode* root = crawler.crawl("https://uneg.edu.ve/", 2);
+    TreeNode* root = crawler.crawl("https://uneg.edu.ve/", 5);
 
     if (root) {
         // Mostrar Arbol
